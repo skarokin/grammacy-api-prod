@@ -1,0 +1,36 @@
+services:
+  flask:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx
+    restart: unless-stopped
+    depends_on:
+      - flask
+    ports:
+      - 80:80      # http
+      - 443:443    # https
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - app-network
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - app-network
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email taemin.kim0327@gmail.com -d api.grammacy.com --agree-tos
+
+# create a network called 'app-network'
+networks:
+  app-network:
+    driver: bridge    # allow all containers in this network to communicate

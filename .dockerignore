@@ -1,0 +1,11 @@
+.git
+.cache
+.sonarlint
+.vscode
+
+**/__pycache__
+*.pyc
+
+*.md
+
+.dockerignore
