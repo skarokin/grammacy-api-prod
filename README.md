@@ -1,6 +1,6 @@
 # grammacy-api-prod
 Our production-ready API to serve real-time English grammar and spell checking.
-- Grammar checker built with [grammacy](https://github.com/skarokin/grammacy) 
+- Grammar checker built with [grammaCy](https://github.com/skarokin/grammacy) 
 - Integrated [symspellpy](https://github.com/mammothb/symspellpy) for spell checking
 
 This API is CPU-optimized and uses fast, lightweight models while retaining a high level of accuracy.
