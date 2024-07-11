@@ -120,7 +120,7 @@ def predict():
     # length checking (model is extremely efficient, but data transfer out of EC2 is expensive lol)
     if len(payload) == 0:
         return {"error": "Input text is empty."}
-    if len(payload) > 256:
+    if len(payload) > 512:
         return {"error": "Input text is too long."}
     
     result = predict_errors(payload, egm, esm)
