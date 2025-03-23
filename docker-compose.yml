@@ -1,36 +1,38 @@
 services:
   flask:
+    container_name: flask
     build:
       context: ./api
       dockerfile: Dockerfile
     networks:
-      - app-network
+      - grammacy-api-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.flask.rule=Host(`api.grammacy.com`)
+      - traefik.http.routers.flask.entrypoints=web
+      - traefik.http.routers.flask.entrypoints=websecure
+      - traefik.http.routers.flask.tls=true
+      - traefik.http.services.flask.loadbalancer.server.port=8000
+      - traefik.http.routers.flask.tls.certresolver=letsencrypt
 
-  nginx:
-    image: nginx
-    restart: unless-stopped
+  traefik:
+    container_name: traefik
+    image: traefik:v3.3
+    command: --providers.docker # in dev, --api.insecure=true
     depends_on:
       - flask
     ports:
       - 80:80      # http
       - 443:443    # https
+      # - 8080:8080  # traefik dashboard (INSECURE)
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/acme:/etc/traefik/acme
+    restart: unless-stopped
     networks:
-      - app-network
+      - grammacy-api-network
 
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    networks:
-      - app-network
-    command: certonly --webroot -w /var/www/certbot --force-renewal --email taemin.kim0327@gmail.com -d api.grammacy.com --agree-tos
-
-# create a network called 'app-network'
 networks:
-  app-network:
-    driver: bridge    # allow all containers in this network to communicate
+  grammacy-api-network:
+    driver: bridge

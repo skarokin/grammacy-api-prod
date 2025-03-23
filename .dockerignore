@@ -9,3 +9,5 @@
 *.md
 
 .dockerignore
+
+traefik/acme
