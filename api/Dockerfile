@@ -25,4 +25,5 @@ COPY . .
 
 EXPOSE 8000
 ENV PYTHONPATH=app
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8000", "server:app"]
+# limit compute resources
+CMD ["gunicorn", "--workers=1", "--threads=2", "--worker-class=gthread", "--timeout=120", "-b", "0.0.0.0:8000", "server:app"]
