@@ -14,6 +14,16 @@ services:
       - traefik.http.routers.flask.tls=true
       - traefik.http.services.flask.loadbalancer.server.port=8000
       - traefik.http.routers.flask.tls.certresolver=letsencrypt
+      - traefik.http.middlewares.rate-limit.ratelimit.average=100
+      - traefik.http.middlewares.rate-limit.ratelimit.burst=10
+      - traefik.http.routers.flask.middlewares=rate-limit@docker
+      - traefik.http.middlewares.security-headers.headers.contentsecuritypolicy=upgrade-insecure-requests
+      - traefik.http.middlewares.security-headers.headers.browserxssfilter=true
+      - traefik.http.middlewares.security-headers.headers.framedeny=true
+      - traefik.http.routers.flask.middlewares=security-headers@docker
+    ports:
+      - 8000:8000
+    restart: unless-stopped
 
   traefik:
     container_name: traefik
